@@ -2,7 +2,7 @@ import pygame as pg
 
 pg.init()
 
-screen = pg.display.set_mode((500, 500))
+screen = pg.display.set_mode((500, 500),pg.RESIZABLE)
 pg.display.set_caption("Falcon Bank")
 pg.display.set_icon(pg.image.load("icon.png"))
 
@@ -70,24 +70,24 @@ class Button:
         self.font = font
 
     def draw(self):
-        if pg.mouse.get_pressed()[0] and not self.tapped:
-            if self.rect.collidepoint(pg.mouse.get_pos()):
-                self.tapped = True
-            if self.action:
-                if self.tapped:
-                    return self.action()
-            else:
-                return self.tapped
-
-        elif self.tapped and pg.mouse.get_pressed()[0] == 0:
-            self.tapped = False
-
         pg.draw.rect(
             screen, self.acolor if self.tapped else self.color, self.rect, 0, 2
         )
         pg.draw.rect(
             screen, self.acolor if self.tapped else self.color, self.rect, 2, 2
         )
+
+        if pg.mouse.get_pressed()[0] and not self.tapped:
+            if self.rect.collidepoint(pg.mouse.get_pos()):
+                self.tapped = True
+                if self.action:
+                    return self.action()
+                else:
+                    return self.tapped
+
+        elif self.tapped and pg.mouse.get_pressed()[0] == 0:
+            self.tapped = False
+
 
         text = self.font.render(self.text, True, "black")
         txtrect = text.get_rect(center=self.rect.center)
@@ -183,6 +183,9 @@ def menu(accno):
         invest_button    =   Button(50, 220, 100, 20, "Invest", "#dddddd", "#aaaaaa",font = sfont)
         logout_button    =   Button(50, 250, 100, 20, "Logout", "#dddddd", "#aaaaaa",font = sfont)
 
+
+        Text(100, 70, "Home", text_list,align='midleft')
+
         while True:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -198,12 +201,14 @@ def menu(accno):
 
 
             #-# Drawing Buttons #-#
-            home_button.draw()
-            withdraw_button.draw()
-            transfer_button.draw()
-            loan_button.draw()
-            invest_button.draw()
+            if home_button.draw(): return home
+            if withdraw_button.draw(): return withdraw
+            if transfer_button.draw(): return transfer
+            if loan_button.draw(): return loan
+            if invest_button.draw(): return invest
             if logout_button.draw(): return login
+
+            
 
 
             screen.blit(logo, logorect)
@@ -211,16 +216,192 @@ def menu(accno):
             pg.display.update()
             clock.tick(60)
     def withdraw():
-        pass
+        text_list = []
+        logo = pg.image.load("logo.png").convert_alpha()
+        logo = pg.transform.rotozoom(logo,0,0.3)
+        logorect = logo.get_rect(center=(60, 35))
+        Text(450, 20, f"Welcome {account[2]} | {accno}", text_list,align='midright')
+
+        home_button      =   Button(50, 100, 100, 20, "Home", "#dddddd", "#aaaaaa",font = sfont)
+        withdraw_button  =   Button(50, 130, 100, 20, "Withdraw", "#dddddd", "#aaaaaa",font = sfont)
+        transfer_button  =   Button(50, 160, 100, 20, "Transfer", "#dddddd", "#aaaaaa",font = sfont)
+        loan_button      =   Button(50, 190, 100, 20, "Loan", "#dddddd", "#aaaaaa",font = sfont)
+        invest_button    =   Button(50, 220, 100, 20, "Invest", "#dddddd", "#aaaaaa",font = sfont)
+        logout_button    =   Button(50, 250, 100, 20, "Logout", "#dddddd", "#aaaaaa",font = sfont)
+
+
+        Text(100, 70, "Withdraw", text_list,align='midleft')
+
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    quit()
+
+            screen.fill("white")
+            pg.draw.line(screen, "black", (100, 70), (100, 500), 2)
+            pg.draw.line(screen, "black", (0,70), (500, 70), 2)
+
+            for i in text_list:
+                i.draw()
+
+
+            #-# Drawing Buttons #-#
+            if home_button.draw(): return home
+            if withdraw_button.draw(): return withdraw
+            if transfer_button.draw(): return transfer
+            if loan_button.draw(): return loan
+            if invest_button.draw(): return invest
+            if logout_button.draw(): return login
+
+            
+
+
+            screen.blit(logo, logorect)
+
+            pg.display.update()
+            clock.tick(60)
 
     def transfer():
-        pass
+        text_list = []
+        logo = pg.image.load("logo.png").convert_alpha()
+        logo = pg.transform.rotozoom(logo,0,0.3)
+        logorect = logo.get_rect(center=(60, 35))
+        Text(450, 20, f"Welcome {account[2]} | {accno}", text_list,align='midright')
+
+        home_button      =   Button(50, 100, 100, 20, "Home", "#dddddd", "#aaaaaa",font = sfont)
+        withdraw_button  =   Button(50, 130, 100, 20, "Withdraw", "#dddddd", "#aaaaaa",font = sfont)
+        transfer_button  =   Button(50, 160, 100, 20, "Transfer", "#dddddd", "#aaaaaa",font = sfont)
+        loan_button      =   Button(50, 190, 100, 20, "Loan", "#dddddd", "#aaaaaa",font = sfont)
+        invest_button    =   Button(50, 220, 100, 20, "Invest", "#dddddd", "#aaaaaa",font = sfont)
+        logout_button    =   Button(50, 250, 100, 20, "Logout", "#dddddd", "#aaaaaa",font = sfont)
+
+
+        Text(100, 70, "Transfer", text_list,align='midleft')
+
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    quit()
+
+            screen.fill("white")
+            pg.draw.line(screen, "black", (100, 70), (100, 500), 2)
+            pg.draw.line(screen, "black", (0,70), (500, 70), 2)
+
+            for i in text_list:
+                i.draw()
+
+
+            #-# Drawing Buttons #-#
+            if home_button.draw(): return home
+            if withdraw_button.draw(): return withdraw
+            if transfer_button.draw(): return transfer
+            if loan_button.draw(): return loan
+            if invest_button.draw(): return invest
+            if logout_button.draw(): return login
+
+            
+
+
+            screen.blit(logo, logorect)
+
+            pg.display.update()
+            clock.tick(60)
 
     def loan():
-        pass
+        text_list = []
+        logo = pg.image.load("logo.png").convert_alpha()
+        logo = pg.transform.rotozoom(logo,0,0.3)
+        logorect = logo.get_rect(center=(60, 35))
+        Text(450, 20, f"Welcome {account[2]} | {accno}", text_list,align='midright')
+
+        home_button      =   Button(50, 100, 100, 20, "Home", "#dddddd", "#aaaaaa",font = sfont)
+        withdraw_button  =   Button(50, 130, 100, 20, "Withdraw", "#dddddd", "#aaaaaa",font = sfont)
+        transfer_button  =   Button(50, 160, 100, 20, "Transfer", "#dddddd", "#aaaaaa",font = sfont)
+        loan_button      =   Button(50, 190, 100, 20, "Loan", "#dddddd", "#aaaaaa",font = sfont)
+        invest_button    =   Button(50, 220, 100, 20, "Invest", "#dddddd", "#aaaaaa",font = sfont)
+        logout_button    =   Button(50, 250, 100, 20, "Logout", "#dddddd", "#aaaaaa",font = sfont)
+
+
+        Text(100, 70, "Loan", text_list,align='midleft')
+
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    quit()
+
+            screen.fill("white")
+            pg.draw.line(screen, "black", (100, 70), (100, 500), 2)
+            pg.draw.line(screen, "black", (0,70), (500, 70), 2)
+
+            for i in text_list:
+                i.draw()
+
+
+            #-# Drawing Buttons #-#
+            if home_button.draw(): return home
+            if withdraw_button.draw(): return withdraw
+            if transfer_button.draw(): return transfer
+            if loan_button.draw(): return loan
+            if invest_button.draw(): return invest
+            if logout_button.draw(): return login
+
+            
+
+
+            screen.blit(logo, logorect)
+
+            pg.display.update()
+            clock.tick(60)
 
     def invest():
-        pass
+        text_list = []
+        logo = pg.image.load("logo.png").convert_alpha()
+        logo = pg.transform.rotozoom(logo,0,0.3)
+        logorect = logo.get_rect(center=(60, 35))
+        Text(450, 20, f"Welcome {account[2]} | {accno}", text_list,align='midright')
+
+        home_button      =   Button(50, 100, 100, 20, "Home", "#dddddd", "#aaaaaa",font = sfont)
+        withdraw_button  =   Button(50, 130, 100, 20, "Withdraw", "#dddddd", "#aaaaaa",font = sfont)
+        transfer_button  =   Button(50, 160, 100, 20, "Transfer", "#dddddd", "#aaaaaa",font = sfont)
+        loan_button      =   Button(50, 190, 100, 20, "Loan", "#dddddd", "#aaaaaa",font = sfont)
+        invest_button    =   Button(50, 220, 100, 20, "Invest", "#dddddd", "#aaaaaa",font = sfont)
+        logout_button    =   Button(50, 250, 100, 20, "Logout", "#dddddd", "#aaaaaa",font = sfont)
+
+
+        Text(100, 70, "Invest", text_list,align='midleft')
+
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    quit()
+
+            screen.fill("white")
+            pg.draw.line(screen, "black", (100, 70), (100, 500), 2)
+            pg.draw.line(screen, "black", (0,70), (500, 70), 2)
+
+            for i in text_list:
+                i.draw()
+
+
+            #-# Drawing Buttons #-#
+            if home_button.draw(): return home
+            if withdraw_button.draw(): return withdraw
+            if transfer_button.draw(): return transfer
+            if loan_button.draw(): return loan
+            if invest_button.draw(): return invest
+            if logout_button.draw(): return login
+
+            
+
+
+            screen.blit(logo, logorect)
+
+            pg.display.update()
+            clock.tick(60)
 
 
     func = home
