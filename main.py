@@ -1,4 +1,5 @@
 import pygame as pg
+import csv
 
 pg.init()
 
@@ -10,8 +11,13 @@ pg.display.set_icon(pg.image.load("icon.png"))
 clock = pg.time.Clock()
 font = pg.font.Font("Menlo.ttf", 25)
 sfont = pg.font.Font("Menlo.ttf", 15)
+bfont = pg.font.Font("Menlo.ttf", 35)
 
-ACCOUNTS={1000:[1234,50000,"Steve"],2000:[5678,25000,"Lionel"],3000:[9090,30000,"Jonathan"]}
+ACCOUNTS = {}
+with open("accounts.csv") as f:
+    for i in csv.reader(f):
+        if i[0] == "AccNo": continue
+        ACCOUNTS[int(i[0])] = [int(i[1]),int(i[2]),str(i[3])]
 
 #----#  Classes  #----#
 class Textbox:
@@ -53,6 +59,8 @@ class Text:
             self.rect = self.txt_surface.get_rect(midright=(self.x, self.y))
         elif align == 'midleft':
             self.rect = self.txt_surface.get_rect(midleft=(self.x, self.y))
+        elif align == 'center':
+            self.rect = self.txt_surface.get_rect(center=(self.x, self.y))
         text_list.append(self)
 
     def draw(self):
@@ -96,24 +104,22 @@ class Button:
 #---#  Functions  #---#
 def login(none = None):
     def challenge():
-        
-
-        if not (ACCNO.text.strip() == "" or PIN.text.strip() == ""):
-            if int(ACCNO.text.strip()) in ACCOUNTS and (int(PIN.text.strip()) == ACCOUNTS[int(ACCNO.text.strip())][0]):
+        if not (accno.text.strip() == "" or pin.text.strip() == ""):
+            if int(accno.text.strip()) in ACCOUNTS and (int(pin.text.strip()) == ACCOUNTS[int(accno.text.strip())][0]):
 
                 return True
 
     textbox_list = []
     text_list = []
     doReturn = None
-    ACCNO = Textbox(250, 300, 200, 40, textbox_list)
-    PIN = Textbox(250, 350, 200, 40, textbox_list, hidden=True)
-    Text(220, 300, "Account Number", text_list)
-    Text(220, 350, "PIN", text_list)
+    accno = Textbox(270, 300, 200, 40, textbox_list)
+    pin = Textbox(270, 350, 200, 40, textbox_list, hidden=True)
+    Text(240, 300, "Account Number:", text_list)
+    Text(240, 350, "PIN           :", text_list)
     invalidate = False
-    invalid_txt = Text(350, 390, "Invalid Account Number or PIN",[],font = sfont,color='red')
-    ACCNO.draw(textbox_list)
-    PIN.draw(textbox_list)
+    invalid_txt = Text(250, 390, "Invalid Account Number or pin",[],font = sfont,color='red',align='center')
+    accno.draw(textbox_list)
+    pin.draw(textbox_list)
 
     logo = pg.image.load("logo.png").convert_alpha()
     logorect = logo.get_rect(center=(250, 150))
@@ -159,7 +165,7 @@ def login(none = None):
 
 
         if doReturn:
-            return menu, [ACCNO.text]
+            return menu, [accno.text]
         
         pg.display.update()
         clock.tick(60)
@@ -171,10 +177,13 @@ def menu(accno):
 
     def home():
         text_list = []
+        textbox_list = []
         logo = pg.image.load("logo.png").convert_alpha()
         logo = pg.transform.rotozoom(logo,0,0.3)
         logorect = logo.get_rect(center=(60, 35))
+
         Text(450, 20, f"Welcome {account[2]} | {accno}", text_list,align='midright')
+        Text(250, 130, f"{ACCOUNTS[accno][1]}", text_list,align='center',font = bfont)
 
         home_button      =   Button(50, 100, 100, 20, "Home", "#dddddd", "#aaaaaa",font = sfont)
         withdraw_button  =   Button(50, 130, 100, 20, "Withdraw", "#dddddd", "#aaaaaa",font = sfont)
@@ -184,7 +193,6 @@ def menu(accno):
         logout_button    =   Button(50, 250, 100, 20, "Logout", "#dddddd", "#aaaaaa",font = sfont)
 
 
-        Text(100, 70, "Home", text_list,align='midleft')
 
         while True:
             for event in pg.event.get():
@@ -215,28 +223,65 @@ def menu(accno):
 
             pg.display.update()
             clock.tick(60)
+
     def withdraw():
+        def challenge():
+            print(account)
+            if int(pin.text) == account[0]:
+                return True
+            
         text_list = []
+        textbox_list = []
+        errors = []
         logo = pg.image.load("logo.png").convert_alpha()
         logo = pg.transform.rotozoom(logo,0,0.3)
         logorect = logo.get_rect(center=(60, 35))
         Text(450, 20, f"Welcome {account[2]} | {accno}", text_list,align='midright')
+        doReturn = None
+        success = False
 
-        home_button      =   Button(50, 100, 100, 20, "Home", "#dddddd", "#aaaaaa",font = sfont)
+        home_button      =   Button(50, 100, 100, 20, "Home"    , "#dddddd", "#aaaaaa",font = sfont)
         withdraw_button  =   Button(50, 130, 100, 20, "Withdraw", "#dddddd", "#aaaaaa",font = sfont)
         transfer_button  =   Button(50, 160, 100, 20, "Transfer", "#dddddd", "#aaaaaa",font = sfont)
-        loan_button      =   Button(50, 190, 100, 20, "Loan", "#dddddd", "#aaaaaa",font = sfont)
-        invest_button    =   Button(50, 220, 100, 20, "Invest", "#dddddd", "#aaaaaa",font = sfont)
-        logout_button    =   Button(50, 250, 100, 20, "Logout", "#dddddd", "#aaaaaa",font = sfont)
+        loan_button      =   Button(50, 190, 100, 20, "Loan"    , "#dddddd", "#aaaaaa",font = sfont)
+        invest_button    =   Button(50, 220, 100, 20, "Invest"  , "#dddddd", "#aaaaaa",font = sfont)
+        logout_button    =   Button(50, 250, 100, 20, "Logout"  , "#dddddd", "#aaaaaa",font = sfont)
 
 
-        Text(100, 70, "Withdraw", text_list,align='midleft')
+        Text(230,120,"Amount:",text_list,font = font)
+        Text(230,170,"PIN   :",text_list,font = font)
+        Amount = Textbox(300,120,160,40,textbox_list,)
+        pin = Textbox(300,170,160,40,textbox_list,hidden=True)
+        button = Button(330,260,160,40,"Confirm","#dddddd","#aaaaaa",font = font,action=challenge)
+
+
 
         while True:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     quit()
+                for tb in textbox_list.copy():
+                    if tb.active:
+                        if event.type == pg.KEYDOWN:
+                            if event.key == pg.K_RETURN:
+                                if tb.text != "":
+                                    tb.active = False
+                                    try:
+                                        textbox_list[textbox_list.index(tb) + 1].active = True
+                                    except IndexError as e:
+                                        print(e)
+                                        if challenge():
+                                            print("Valid")
+                                            doReturn = True
+                                            break
+                                        else:
+                                            invalidate = True
+                            elif event.key == pg.K_BACKSPACE:
+                                tb.text = tb.text[:-1]
+                            else:
+                                if event.unicode.isdigit():
+                                    tb.text += event.unicode
 
             screen.fill("white")
             pg.draw.line(screen, "black", (100, 70), (100, 500), 2)
@@ -244,8 +289,10 @@ def menu(accno):
 
             for i in text_list:
                 i.draw()
-
-
+            for i in textbox_list:
+                i.draw(textbox_list)
+            for i in errors:
+                i.draw()
             #-# Drawing Buttons #-#
             if home_button.draw(): return home
             if withdraw_button.draw(): return withdraw
@@ -254,36 +301,118 @@ def menu(accno):
             if invest_button.draw(): return invest
             if logout_button.draw(): return login
 
-            
+            if doReturn == None:doReturn = button.draw()
 
+            if doReturn:
+                if Amount.text != "":
+                    if int(Amount.text) <= account[1]:
+                        ACCOUNTS[accno][1] -= int(Amount.text)
+                        success = True
+                    else:
+                        errors.clear()
+                        Text(400,300,"Insufficient Balance",errors,font = sfont,color="red")
+                        doReturn = None
+                else:
+                    errors.clear()
+                    Text(400,300,"Please Enter an Amount",errors,font = sfont,color="red")
+                    doReturn = None
 
+            if success:
+                errors.clear()
+                Text(400,300,"Transaction Successful",errors,font = sfont,color="green")
+                with open("accounts.csv","w",newline='') as f:
+                    writer = csv.writer(f)
+                    for i in ACCOUNTS:
+                        l  = [i,ACCOUNTS[i][0],ACCOUNTS[i][1],ACCOUNTS[i][2]]
+                        writer.writerow(l)
+                success = False
+                doReturn = None
+                Amount.text = ""
+                pin.text = ""
             screen.blit(logo, logorect)
 
             pg.display.update()
             clock.tick(60)
 
     def transfer():
+        def challenge():
+            print(account)
+
+            if  int(RAccNo.text) in ACCOUNTS:
+                if int(pin.text) == account[0]:
+                    if int(Amount.text) <= account[1]:
+                        return True
+                    else:
+                        errors.clear()
+                        Text(400,300,"Insufficient Balance",errors,font = sfont,color="red")
+                        return False
+                else:
+                    errors.clear()
+                    Text(400,300,"Incorrect Pin",errors,font = sfont,color="red")
+                    return False
+            else:
+                errors.clear()
+                Text(400,300,"Invalid Account Number",errors,font = sfont,color="red")
+                return False
+
+
+            
         text_list = []
+        textbox_list = []
+        errors = []
         logo = pg.image.load("logo.png").convert_alpha()
         logo = pg.transform.rotozoom(logo,0,0.3)
         logorect = logo.get_rect(center=(60, 35))
         Text(450, 20, f"Welcome {account[2]} | {accno}", text_list,align='midright')
+        doReturn = None
+        success = False
 
-        home_button      =   Button(50, 100, 100, 20, "Home", "#dddddd", "#aaaaaa",font = sfont)
+        home_button      =   Button(50, 100, 100, 20, "Home"    , "#dddddd", "#aaaaaa",font = sfont)
         withdraw_button  =   Button(50, 130, 100, 20, "Withdraw", "#dddddd", "#aaaaaa",font = sfont)
         transfer_button  =   Button(50, 160, 100, 20, "Transfer", "#dddddd", "#aaaaaa",font = sfont)
-        loan_button      =   Button(50, 190, 100, 20, "Loan", "#dddddd", "#aaaaaa",font = sfont)
-        invest_button    =   Button(50, 220, 100, 20, "Invest", "#dddddd", "#aaaaaa",font = sfont)
-        logout_button    =   Button(50, 250, 100, 20, "Logout", "#dddddd", "#aaaaaa",font = sfont)
+        loan_button      =   Button(50, 190, 100, 20, "Loan"    , "#dddddd", "#aaaaaa",font = sfont)
+        invest_button    =   Button(50, 220, 100, 20, "Invest"  , "#dddddd", "#aaaaaa",font = sfont)
+        logout_button    =   Button(50, 250, 100, 20, "Logout"  , "#dddddd", "#aaaaaa",font = sfont)
 
 
-        Text(100, 70, "Transfer", text_list,align='midleft')
+        Text(230,120,"Amount :",text_list,font = font)
+        Text(230,170,"R-AccNo:",text_list,font = font)
+        Text(230,220,"PIN    :",text_list,font = font)
+
+        Amount = Textbox(300,120,160,40,textbox_list)
+        RAccNo = Textbox(300,170,160,40,textbox_list)
+        pin    = Textbox(300,220,160,40,textbox_list,hidden=True)
+
+        button = Button(330,370,160,40,"Confirm","#dddddd","#aaaaaa",font = font,action=challenge)
+
+
 
         while True:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     quit()
+                for tb in textbox_list.copy():
+                    if tb.active:
+                        if event.type == pg.KEYDOWN:
+                            if event.key == pg.K_RETURN:
+                                if tb.text != "":
+                                    tb.active = False
+                                    try:
+                                        textbox_list[textbox_list.index(tb) + 1].active = True
+                                    except IndexError as e:
+                                        print(e)
+                                        if challenge():
+                                            print("Valid")
+                                            doReturn = True
+                                            break
+                                        else:
+                                            invalidate = True
+                            elif event.key == pg.K_BACKSPACE:
+                                tb.text = tb.text[:-1]
+                            else:
+                                if event.unicode.isdigit():
+                                    tb.text += event.unicode
 
             screen.fill("white")
             pg.draw.line(screen, "black", (100, 70), (100, 500), 2)
@@ -291,8 +420,10 @@ def menu(accno):
 
             for i in text_list:
                 i.draw()
-
-
+            for i in textbox_list:
+                i.draw(textbox_list)
+            for i in errors:
+                i.draw()
             #-# Drawing Buttons #-#
             if home_button.draw(): return home
             if withdraw_button.draw(): return withdraw
@@ -301,14 +432,40 @@ def menu(accno):
             if invest_button.draw(): return invest
             if logout_button.draw(): return login
 
-            
+            if doReturn == None:doReturn = button.draw()
 
+            if doReturn:
+                if Amount.text != "":
+                    if int(Amount.text) <= account[1]:
+                        ACCOUNTS[accno][1] -= int(Amount.text)
+                        ACCOUNTS[int(RAccNo.text)][1] += int(Amount.text)
+                        success = True
+                    else:
+                        errors.clear()
+                        Text(400,300,"Insufficient Balance",errors,font = sfont,color="red")
+                        doReturn = None
+                else:
+                    errors.clear()
+                    Text(400,300,"Please Enter an Amount",errors,font = sfont,color="red")
+                    doReturn = None
 
+            if success:
+                errors.clear()
+                Text(400,300,"Transaction Successful",errors,font = sfont,color="green")
+                with open("accounts.csv","w",newline='') as f:
+                    writer = csv.writer(f)
+                    for i in ACCOUNTS:
+                        l  = [i,ACCOUNTS[i][0],ACCOUNTS[i][1],ACCOUNTS[i][2]]
+                        writer.writerow(l)
+                success = False
+                doReturn = None
+                Amount.text = ""
+                pin.text = ""
+                RAccNo.text = ""
             screen.blit(logo, logorect)
 
             pg.display.update()
             clock.tick(60)
-
     def loan():
         text_list = []
         logo = pg.image.load("logo.png").convert_alpha()
